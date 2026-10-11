@@ -6,6 +6,7 @@ import '../../../core/providers/supabase_provider.dart';
 import '../../delivery_zones/data/delivery_zones_repository.dart';
 import '../../delivery_zones/domain/delivery_zone_models.dart';
 import '../../delivery_zones/presentation/delivery_zones_providers.dart';
+import '../data/support_links_repository.dart';
 import 'locale_controller.dart';
 
 /// صفحة الإعدادات: اختيار لغة عرض التطبيق (عربي/فرنسي) وحفظها في الحساب.
@@ -52,8 +53,144 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 20),
+        const _SupportLinksSection(),
+        const SizedBox(height: 20),
         const _DeliveryZonesSection(),
       ],
+    );
+  }
+}
+
+/// قسم إعدادات الدعم والتواصل المعروضة في تطبيق الزبون.
+class _SupportLinksSection extends ConsumerStatefulWidget {
+  const _SupportLinksSection();
+
+  @override
+  ConsumerState<_SupportLinksSection> createState() => _SupportLinksSectionState();
+}
+
+class _SupportLinksSectionState extends ConsumerState<_SupportLinksSection> {
+  final TextEditingController _phone = TextEditingController();
+  final TextEditingController _whatsapp = TextEditingController();
+  final TextEditingController _facebook = TextEditingController();
+  final TextEditingController _instagram = TextEditingController();
+  final TextEditingController _tiktok = TextEditingController();
+  bool _loading = true;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void dispose() {
+    _phone.dispose();
+    _whatsapp.dispose();
+    _facebook.dispose();
+    _instagram.dispose();
+    _tiktok.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load() async {
+    try {
+      final Map<String, String> values = await ref.read(supportLinksRepositoryProvider).fetchAll();
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _phone.text = values['contact_phone'] ?? '';
+        _whatsapp.text = values['whatsapp_number'] ?? '';
+        _facebook.text = values['facebook'] ?? '';
+        _instagram.text = values['instagram'] ?? '';
+        _tiktok.text = values['tiktok'] ?? '';
+        _loading = false;
+      });
+    } on Object {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  Future<void> _save() async {
+    setState(() => _busy = true);
+    try {
+      await ref.read(supportLinksRepositoryProvider).saveAll(<String, String>{
+        'contact_phone': _phone.text,
+        'whatsapp_number': _whatsapp.text,
+        'facebook': _facebook.text,
+        'instagram': _instagram.text,
+        'tiktok': _tiktok.text,
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(t('تم حفظ إعدادات التواصل. يظهر التحديث فوراً في تطبيق الزبون.'))),
+        );
+      }
+    } on Object catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${t('تعذّر الحفظ')}: $error'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
+  }
+
+  Widget _field(TextEditingController controller, String label, String hint, TextInputType type) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: TextField(
+        controller: controller,
+        keyboardType: type,
+        enabled: !_loading,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hint,
+          border: const OutlineInputBorder(),
+          isDense: true,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: ExpansionTile(
+        leading: Icon(Icons.headset_mic_outlined, color: theme.colorScheme.primary),
+        title: Text(t('الدعم والتواصل في تطبيق الزبون'), style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+        subtitle: Text(
+          t('تُقرأ هذه القيم من تطبيق الزبون في قسمي «اتصل بنا» و«تواصل اجتماعي».'),
+          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withValues(alpha: 0.55)),
+        ),
+        childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+        children: <Widget>[
+          if (_loading) const LinearProgressIndicator(minHeight: 2),
+          _field(_phone, t('رقم الهاتف — زر «اتصل بنا»'), t('مثال: +213551234567'), TextInputType.phone),
+          _field(_whatsapp, t('رقم واتساب'), t('مثال: 0555123456 أو +213555123456'), TextInputType.phone),
+          _field(_facebook, t('رابط فيسبوك'), 'https://facebook.com/', TextInputType.url),
+          _field(_instagram, t('رابط إنستغرام'), 'https://instagram.com/', TextInputType.url),
+          _field(_tiktok, t('رابط تيك توك'), 'https://tiktok.com/', TextInputType.url),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: (_busy || _loading) ? null : _save,
+              icon: const Icon(Icons.save_outlined, size: 18),
+              label: Text(t('حفظ إعدادات التواصل')),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

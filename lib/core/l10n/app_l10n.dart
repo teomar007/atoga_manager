@@ -402,6 +402,18 @@ const Map<String, String> _fr = <String, String>{
   'لغة العرض': 'Langue d’affichage',
   'تُحفظ تلقائياً في حسابك': 'Enregistrée automatiquement dans votre compte',
   'لغة التطبيق': 'Langue de l’application',
+  'الدعم والتواصل في تطبيق الزبون': 'Support et contact (application client)',
+  'تُقرأ هذه القيم من تطبيق الزبون في قسمي «اتصل بنا» و«تواصل اجتماعي».': 'Ces valeurs sont lues par l’application client (sections « Contact » et « Réseaux sociaux »).',
+  'رقم الهاتف — زر «اتصل بنا»': 'Téléphone — bouton « Appelez-nous »',
+  'مثال: +213551234567': 'Ex : +213551234567',
+  'رقم واتساب': 'Numéro WhatsApp',
+  'مثال: 0555123456 أو +213555123456': 'Ex : 0555123456 ou +213555123456',
+  'رابط فيسبوك': 'Lien Facebook',
+  'رابط إنستغرام': 'Lien Instagram',
+  'رابط تيك توك': 'Lien TikTok',
+  'حفظ إعدادات التواصل': 'Enregistrer les contacts',
+  'تم حفظ إعدادات التواصل. يظهر التحديث فوراً في تطبيق الزبون.': 'Contacts enregistrés. La mise à jour est immédiate dans l’application client.',
+  'تعذّر الحفظ': 'Échec de l’enregistrement',
 
   // حجب/طلب وصول
   'غير مصرّح بالدخول': 'Accès refusé',
