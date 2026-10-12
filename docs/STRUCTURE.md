@@ -1,0 +1,128 @@
+# بنية الكود — Code Structure
+
+> تُولَّد من `lib/` — Generated from `lib/`.
+
+```
+📁 core
+    📁 config
+        📄 supabase_config.dart
+    📁 l10n
+        📄 app_l10n.dart
+    📁 providers
+        📄 supabase_provider.dart
+    📁 router
+        📄 app_router.dart
+    📁 services
+        📄 imagekit_uploader.dart
+        📄 translation_service.dart
+    📁 theme
+        📄 app_colors.dart
+        📄 app_theme.dart
+    📁 utils
+        📄 uuid.dart
+    📁 widgets
+        📄 brand_logo.dart
+        📄 coming_soon_view.dart
+        📄 image_pick_field.dart
+📁 features
+    📁 auth
+        📁 data
+            📄 auth_repository.dart
+        📁 domain
+            📄 access_request.dart
+            📄 staff_role.dart
+        📁 presentation
+            📄 access_denied_screen.dart
+            📄 auth_controller.dart
+            📄 login_screen.dart
+            📄 rejected_access_screen.dart
+            📄 request_access_screen.dart
+            📄 splash_screen.dart
+            📄 waiting_access_screen.dart
+    📁 catalog
+        📁 data
+            📄 catalog_repository.dart
+        📁 domain
+            📄 catalog_models.dart
+        📁 presentation
+            📄 catalog_providers.dart
+            📄 catalog_screen.dart
+            📄 category_form_screen.dart
+            📄 category_icons.dart
+            📄 product_form_screen.dart
+    📁 customers
+        📁 data
+            📄 customers_repository.dart
+        📁 domain
+            📄 customer_models.dart
+        📁 presentation
+            📄 customers_providers.dart
+            📄 customers_screen.dart
+    📁 dashboard
+        📁 data
+            📄 dashboard_repository.dart
+        📁 domain
+            📄 dashboard_models.dart
+        📁 presentation
+            📄 dashboard_providers.dart
+            📄 dashboard_screen.dart
+    📁 delivery_zones
+        📁 data
+            📄 delivery_zones_repository.dart
+        📁 domain
+            📄 delivery_zone_models.dart
+        📁 presentation
+            📄 delivery_zones_providers.dart
+    📁 employees
+        📁 data
+            📄 employees_repository.dart
+        📁 domain
+            📄 employee_models.dart
+        📁 presentation
+            📄 employee_create_screen.dart
+            📄 employee_stats_screen.dart
+            📄 employees_providers.dart
+            📄 employees_screen.dart
+    📁 marketing
+        📁 data
+            📄 marketing_repository.dart
+        📁 domain
+            📄 marketing_models.dart
+        📁 presentation
+            📄 banner_form_screen.dart
+            📄 coupon_form_screen.dart
+            📄 marketing_providers.dart
+            📄 marketing_screen.dart
+            📄 notifications_screen.dart
+    📁 settings
+        📁 data
+            📄 support_links_repository.dart
+        📁 presentation
+            📄 locale_controller.dart
+            📄 settings_screen.dart
+    📁 shell
+        📁 presentation
+            📄 home_shell.dart
+    📁 store_hours
+        📁 data
+            📄 store_hours_repository.dart
+        📁 domain
+            📄 store_shift_models.dart
+        📁 presentation
+            📄 store_hours_providers.dart
+            📄 store_hours_screen.dart
+    📁 wallet
+        📁 data
+            📄 wallet_repository.dart
+        📁 domain
+            📄 wallet_models.dart
+        📁 presentation
+            📄 customer_wallet_screen.dart
+            📄 wallet_providers.dart
+            📄 wallet_screen.dart
+📄 app.dart
+📄 main.dart
+```
+
+---
+*لا تعدّل هذا الملف يدوياً — أعد توليده (Do not edit by hand).*
