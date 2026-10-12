@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/l10n/app_l10n.dart';
 import '../domain/catalog_models.dart';
 import 'catalog_providers.dart';
+import 'category_icons.dart';
 import 'category_form_screen.dart';
 import 'product_form_screen.dart';
 
@@ -68,6 +69,28 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   Future<void> _toggleCategoryActive(CatalogCategory category, bool active) async {
     await ref.read(catalogRepositoryProvider).updateCategory(category.id, <String, dynamic>{'is_active': active});
     ref.invalidate(catalogCategoriesProvider);
+  }
+
+  Future<void> _deleteCategory(CatalogCategory category) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(t('حذف التصنيف')),
+        content: Text(t('سيُحذف التصنيف «%s» نهائياً. المنتجات المرتبطة ستبقى بدون تصنيف. متابعة؟').replaceFirst('%s', category.displayName)),
+        actions: <Widget>[
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(t('إلغاء'))),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(t('حذف')),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref.read(catalogRepositoryProvider).deleteCategory(category.id);
+      ref.invalidate(catalogCategoriesProvider);
+    }
   }
 
   Future<void> _deleteProduct(CatalogProduct product) async {
@@ -181,6 +204,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
               category: category,
               onToggleActive: (bool active) => _toggleCategoryActive(category, active),
               onEdit: () => _openCategoryForm(category),
+              onDelete: () => _deleteCategory(category),
             );
           },
         );
@@ -315,11 +339,13 @@ class _CategoryTile extends StatelessWidget {
     required this.category,
     required this.onToggleActive,
     required this.onEdit,
+    required this.onDelete,
   });
 
   final CatalogCategory category;
   final ValueChanged<bool> onToggleActive;
   final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -329,7 +355,15 @@ class _CategoryTile extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: <Widget>[
-            CatalogThumb(url: category.iconUrl),
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(categoryIconFor(category.iconName), color: theme.colorScheme.primary, size: 28),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -348,6 +382,7 @@ class _CategoryTile extends StatelessWidget {
             ),
             Switch(value: category.isActive, onChanged: onToggleActive),
             IconButton(tooltip: t('تعديل'), icon: const Icon(Icons.edit_outlined, size: 20), onPressed: onEdit),
+            IconButton(tooltip: t('حذف'), icon: const Icon(Icons.delete_outline_rounded, size: 20, color: AppColors.danger), onPressed: onDelete),
           ],
         ),
       ),

@@ -26,6 +26,12 @@ class CatalogRepository {
     await _client.from('categories').update(values).eq('id', id);
   }
 
+  /// حذف تصنيف نهائياً. المنتجات المرتبطة تبقى مع `category_id = null`
+  /// (قيد المفتاح الأجنبي `on delete set null`).
+  Future<void> deleteCategory(String id) async {
+    await _client.from('categories').delete().eq('id', id);
+  }
+
   // ---------- المنتجات ----------
   Future<List<CatalogProduct>> fetchProducts() async {
     final dynamic rows = await _client.from('products').select().order('created_at', ascending: false);

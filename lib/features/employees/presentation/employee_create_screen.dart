@@ -86,15 +86,23 @@ class _EmployeeCreateScreenState extends ConsumerState<EmployeeCreateScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _username,
+              keyboardType: TextInputType.text,
+              autocorrect: false,
+              enableSuggestions: false,
               autofillHints: const <String>[AutofillHints.username],
               decoration: InputDecoration(
                 labelText: t('اسم المستخدم *'),
+                hintText: 'ex: driver01',
                 prefixIcon: const Icon(Icons.person_outline_rounded),
               ),
               validator: (String? value) {
-                final String username = value?.trim() ?? '';
-                if (username.length < 3) {
-                  return t('اسم المستخدم 3 أحرف على الأقل');
+                final String username = (value ?? '').trim().toLowerCase();
+                if (username.isEmpty) {
+                  return t('أدخل اسم المستخدم');
+                }
+                // يطابق قواعد الخادم: حروف/أرقام/نقطة/شرطة، 3-30 حرفاً.
+                if (!RegExp(r'^[a-z0-9][a-z0-9._-]{2,29}$').hasMatch(username)) {
+                  return t('اسم المستخدم: 3-30 حرفاً (حروف/أرقام/نقطة/شرطة) فقط.');
                 }
                 return null;
               },

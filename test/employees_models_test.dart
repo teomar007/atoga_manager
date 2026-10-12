@@ -32,20 +32,26 @@ void main() {
     expect(member.isActive, isTrue); // الافتراضي عند غياب is_active
   });
 
-  test('DriverPackagerKpi يقرأ القيم الرقمية النصية', () {
-    final DriverPackagerKpi kpi = DriverPackagerKpi.fromJson(<String, dynamic>{
+  test('EmployeeStats يقرأ القيم الرقمية النصية', () {
+    final EmployeeStats stats = EmployeeStats.fromJson(<String, dynamic>{
       'user_id': 'u1',
       'role': 'driver',
       'full_name': 'أحمد',
       'email': 'driver@atoga.com',
-      'total_orders': 3,
-      'successful_rate': '0.6667',
+      'is_active': true,
+      'received': 3,
+      'delivered': 2,
+      'returned': '1',
+      'in_progress': 0,
+      'success_rate': '0.5',
       'avg_delivery_min': '30',
+      'total_revenue': '1500.5',
+      'on_time_rate': 0.9,
     });
-    expect(kpi.isDriver, isTrue);
-    expect(kpi.displayName, 'أحمد');
-    expect(kpi.totalOrders, 3);
-    expect(kpi.successfulRate, closeTo(0.6667, 0.0001));
-    expect(kpi.avgDeliveryMin, 30);
+    expect(stats.role, 'driver');
+    expect(stats.displayName, 'أحمد');
+    expect(stats.received, 3);
+    expect(stats.successRate, closeTo(0.5, 0.0001));
+    expect(stats.avgDeliveryMin, 30);
   });
 }

@@ -59,16 +59,21 @@ class EmployeesRepository {
     String? phone,
     String? fullName,
   }) async {
-    await _client.functions.invoke(
-      'admin-create-staff',
-      body: <String, dynamic>{
-        'username': username,
-        'password': password,
-        'role': role,
-        'phone': phone,
-        'full_name': fullName,
-      },
-    );
+    try {
+      await _client.functions.invoke(
+        'admin-create-staff',
+        body: <String, dynamic>{
+          'username': username,
+          'password': password,
+          'role': role,
+          'phone': phone,
+          'full_name': fullName,
+        },
+      );
+    } on FunctionException catch (error) {
+      // نُظهر رسالة الخادم الحقيقية (اسم مستخدم محجوز/كلمة مرور/دور...).
+      throw StaffError(_functionMessage(error));
+    }
   }
 
   /// تجميد/تفعيل الحساب (يمنع الدخول إلى تطبيق التوصيل والتجهيز).
@@ -98,22 +103,45 @@ class EmployeesRepository {
 
   /// تغيير كلمة مرور الموظف عبر الدالة `admin-manage-user`.
   Future<void> changePassword({required String userId, required String newPassword}) async {
-    final FunctionResponse response = await _client.functions.invoke(
-      'admin-manage-user',
-      body: <String, dynamic>{
-        'action': 'password',
-        'user_id': userId,
-        'new_password': newPassword,
-      },
-    );
-    final dynamic data = response.data;
-    if (data is Map && data['error'] != null) {
-      throw StateError('${data['error']}');
+    try {
+      final FunctionResponse response = await _client.functions.invoke(
+        'admin-manage-user',
+        body: <String, dynamic>{
+          'action': 'password',
+          'user_id': userId,
+          'new_password': newPassword,
+        },
+      );
+      final dynamic data = response.data;
+      if (data is Map && data['error'] != null) {
+        throw StaffError('${data['error']}');
+      }
+    } on FunctionException catch (error) {
+      throw StaffError(_functionMessage(error));
     }
+  }
+
+  /// يستخرج رسالة الخطأ من جسم استجابة دالة Edge.
+  String _functionMessage(FunctionException error) {
+    final dynamic details = error.details;
+    if (details is Map && details['error'] != null) {
+      return '${details['error']}';
+    }
+    return error.reasonPhrase ?? 'HTTP ${error.status}';
   }
 
   /// حذف الحساب نهائياً (مع الملف والدور).
   Future<void> deleteEmployee(String userId) async {
     await _client.rpc('admin_delete_account', params: <String, dynamic>{'p_user_id': userId});
   }
+}
+
+/// خطأ موظفين برسالة عربية واضحة من الخادم.
+class StaffError implements Exception {
+  const StaffError(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }
